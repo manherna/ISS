@@ -1,0 +1,21 @@
+We will make an 2 diferent scenes.
+- Relaxing part: Travelling and looking freely through a peaceful and relaxing enviroment.(With sound and some voice.)
+- Task: Cognitively demanding task. It should be spatial working memory. (With different short and loud sounds: Acoustic_Startles and maybe gunshots).
+
+We will start at Relaxing part for some time T and we will start the task for X time and return to scene.
+Task scene class.
+Relaxing and Tasks will be different scenes that will load each other on finish.
+Input file with all the times of changing to the other scene:
+Format:
+	Relax:time;
+	Task:time;
+	.....
+
+Save all those times to a "times" vector.
+Each time we change scene we advance one in our vector.
+When all the values have been read, we load a black screen.
+
+Another exe file containing a program that will open a socket and collect the information sent by the socket in unity.
+Types of messages you can show:
+- Task/Relax + Started/Finished
+- Own task's messages.
