@@ -13,6 +13,15 @@ public class SceneLoader : MonoBehaviour {
     int actScene = -1;
     SocketComServer com;
     private string currentScene;
+    private int tasktime;
+
+    public int getTaskTime()
+    {
+        if (currentScene == "TASK") return tasktime;
+        else return -1;
+
+
+    }
     void Awake()
     {
         DontDestroyOnLoad(this);
@@ -23,6 +32,7 @@ public class SceneLoader : MonoBehaviour {
     void Start () {
         com = GameObject.FindObjectOfType<SocketComServer>();
         currentScene = "START";
+        tasktime = -1;
 	}
 	
 	// Update is called once per frame
@@ -64,9 +74,10 @@ public class SceneLoader : MonoBehaviour {
     }
     void changeToTask() {
         
-        SceneManager.LoadScene("TaskScene", LoadSceneMode.Single);
+        SceneManager.LoadScene("TaskScene2", LoadSceneMode.Single);
         com.OnSceneStart("TASK");
         currentScene = "TASK";
+        tasktime = sTimes[1, actScene];
         Invoke("changeScene", sTimes[1, actScene]);
         actScene++;
     }

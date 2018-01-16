@@ -37,7 +37,7 @@ public class SocketComServer : MonoBehaviour
             IPAddress ipAd;
             TcpListener serverSocket;
             //Localhost: 127.0.0.1
-            ipAd = IPAddress.Parse("10.129.208.201");
+            ipAd = IPAddress.Parse("127.0.0.1");
             serverSocket = new TcpListener(ipAd, 8001);
             Debug.Log("Starting server...");
             serverSocket.Start();
