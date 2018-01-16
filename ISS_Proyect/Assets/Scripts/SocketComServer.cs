@@ -10,6 +10,7 @@ public class SocketComServer : MonoBehaviour
 {
     Thread server;
     LinkedList<string> buffer;
+    Socket s;
     public bool serverClose;
 
     private void Awake()
@@ -18,7 +19,8 @@ public class SocketComServer : MonoBehaviour
     }
     private void OnDestroy()
     {
-      
+        serverClose = true;
+        server.Join();
     }
 
     // Use this for initialization
@@ -26,8 +28,27 @@ public class SocketComServer : MonoBehaviour
         serverClose = false;
         server = new Thread(comunicate);
         buffer = new LinkedList<string>();
+        s = null;
         server.Start();
+       System.Diagnostics.Process.Start(Application.dataPath + "/SideProgram/BasicClient.exe");
+
     }
+
+    // This method was obtained from https://stackoverflow.com/questions/6803073/get-local-ip-address
+
+    public static string GetLocalIPAddress()
+    {
+
+        var host = Dns.GetHostEntry(Dns.GetHostName());
+        foreach (var ip in host.AddressList)
+        {
+            if (ip.AddressFamily == AddressFamily.InterNetwork)
+            {
+                return ip.ToString();
+            }
+        }
+        throw new System.Exception("No network adapters with an IPv4 address in the system!");
+    } 
 
     #region threadfunction
     void comunicate()
@@ -36,8 +57,7 @@ public class SocketComServer : MonoBehaviour
         {
             IPAddress ipAd;
             TcpListener serverSocket;
-            //Localhost: 127.0.0.1
-            ipAd = IPAddress.Parse("127.0.0.1");
+            ipAd = IPAddress.Parse(GetLocalIPAddress());
             serverSocket = new TcpListener(ipAd, 8001);
             Debug.Log("Starting server...");
             serverSocket.Start();
@@ -45,7 +65,7 @@ public class SocketComServer : MonoBehaviour
    
 
 
-            Socket s = serverSocket.AcceptSocket();
+            s = serverSocket.AcceptSocket();
             Debug.Log("Connection accepted from " + s.RemoteEndPoint);
 
       
@@ -59,13 +79,13 @@ public class SocketComServer : MonoBehaviour
                         s.Send(Encoding.ASCII.GetBytes(a));
                         buffer.RemoveFirst();
 
-
                     }
                 }
             }
-            updateBuffer("END");
-            s.Close();
+            byte []end = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+            s.Send(end);
             serverSocket.Stop();
+
               }
         catch (System.Exception e)
         {
@@ -81,8 +101,6 @@ public class SocketComServer : MonoBehaviour
 
     }
     private void updateBuffer (string message){
-
-
         lock (buffer)
         {
             buffer.AddLast(message);
@@ -93,18 +111,20 @@ public class SocketComServer : MonoBehaviour
     #region Notifying methods
     public void OnSceneStart(string scene)
     {
-        updateBuffer(scene + " started");
+        updateBuffer(scene + " started ");
     }
     public void OnSceneEnd(string scene)
     {
-        updateBuffer(scene + " ended");
+        updateBuffer(scene + " ended ");
     }
     public void EndServer()
     {
         Debug.Log("Closing Server...");
-
-
         serverClose = true;
+    }
+    public void sendMessage(string message)
+    {
+        updateBuffer(message);
     }
 #endregion  
 }

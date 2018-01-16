@@ -261,10 +261,8 @@
     <Compile Include="Assets\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Scripts\Vortex.cs" />
     <Compile Include="Assets\Scripts\FileReader.cs" />
     <Compile Include="Assets\Scripts\GameManager2.cs" />
-    <Compile Include="Assets\Scripts\OnPinkClicked.cs" />
     <Compile Include="Assets\Scripts\SceneLoader.cs" />
     <Compile Include="Assets\Scripts\SocketComServer.cs" />
-    <Compile Include="Assets\SideProgram\Prueba.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Files\test.txt" />

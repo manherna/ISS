@@ -13,51 +13,90 @@ public class GameManager2 : MonoBehaviour {
     public AudioClip aux;
     private AudioSource source;
     public SceneLoader sLoader;
+    public SocketComServer server;
 
     public float IT = 1.0f;
     public float MCT =1.1f;
     float T;
     int N;
-    int clicked;
+    int goodClicked;
+    int clicksMade;
     Vector2 pinkSpriteSize;
     GameObject[] objs;
+    bool started;
 
     // Use this for initialization
     void Start () {
         try
         {
             sLoader = GameObject.FindObjectOfType<SceneLoader>();
+            server = GameObject.FindObjectOfType<SocketComServer>();
         }
         catch (Exception e) { }
 
+
+        started = false;
         T = sLoader.getTaskTime();
 
         //Initialization of our ecuation N = (T-IT)/MCT
         N = (int)((T - IT) / MCT);
 
-        Debug.Log("T is : " + T + "N is : " + N);
-
         pinkSpriteSize = new Vector2(pinkRect.GetComponent<SpriteRenderer>().size.x, pinkRect.GetComponent<SpriteRenderer>().size.y);
-        Debug.Log(pinkSpriteSize.x + " " + pinkSpriteSize.y);
-       
 
         sceneSet();
-
-        Debug.Log(N + " squares generated");
-
-
-        clicked = 0;
-    //    source = GetComponent<AudioSource>();
-
-    //    source.PlayOneShot(aux);
-
-      
+        //    source = GetComponent<AudioSource>();
+        //    source.PlayOneShot(aux);
+        Invoke("disableRendering", IT);
 		
 	}
+    void CheckDistances()
+    {
+        Debug.Log(clicksMade);
+        if (clicksMade >= N)
+        {
+            Debug.Log("CLICKS MADE: " + clicksMade);
+            return;
+        }
+        
+
+        Vector3 mousep = Input.mousePosition;
+        mousep.z = 0;
+        mousep = Camera.main.ScreenToWorldPoint(mousep);
+
+        float dist = float.MaxValue;
+
+        foreach(GameObject i in objs)
+        {
+            //First we check if it's inside the square
+            Collider2D k = i.GetComponent<Collider2D>();
+           if(k.OverlapPoint(mousep))
+            {
+                i.SetActive(false);
+                goodClicked++;
+                Debug.Log(goodClicked);
+                server.sendMessage("SQUARE CLICKED AT: " + mousep.x + " " + mousep.y);
+                return;
+            }
+
+            float aux = (float)euclideanDistance(new Vector2(mousep.x, mousep.y), new Vector2(i.transform.position.x, i.transform.position.y));
+            if (aux < dist) dist = aux;
+        }
+        server.sendMessage("CLICK AT "+mousep.x+ " "+ mousep.y+ " FAILED");
+        server.sendMessage("DISTANCE TO CLOSEST SQUARE: " + dist);
+    }
+
+    double euclideanDistance(Vector2 a, Vector2 b)
+    {
+        return Math.Sqrt(Math.Pow(a.x + b.x, 2) + (Math.Pow(a.y + b.y, 2)));
+    }
 	
 	// Update is called once per frame
 	void Update () {
-        
+        if (Input.GetMouseButtonDown(0) && started)
+        {
+            clicksMade++;
+            CheckDistances();
+        }
 		
 	}
     void sceneSet()
@@ -72,34 +111,28 @@ public class GameManager2 : MonoBehaviour {
         min.y = c.ScreenToWorldPoint(new Vector3(0, 0, 0)).y + pinkSpriteSize.y;
         max.y = c.ScreenToWorldPoint(new Vector3(0, Screen.height, 0)).y - pinkSpriteSize.y;
 
-        Debug.Log("The minimum is: " + min.x + " " + min.y + " " + ". Maximum is: " + max.x + " " + max.y);
+   
         float l, r;
-        Debug.Log(-min.x + max.x);
         l = (-min.x + max.x) /(3*N);
         float x = min.x;
 
-        Debug.Log("L: " + l + " X: " + x);
         for (int i = 0; i < N; i++)
         {
-            Debug.Log(x);
-            int aux = rnd.Next((int)(x+=l),(int)(x+=2*l));
+            int aux = rnd.Next((int)(x += l), (int)(x += 2 * l));
             int aux2 = rnd.Next((int)min.y, (int)max.y);
             p = new Vector3(aux, aux2, 0);
 
             objs[i] = GameObject.Instantiate(pinkRect, p, Quaternion.identity);
- 
         }
-
-
-
-
+        clicksMade = 0;
+        started = true;
     }
-
-    public void pinkClicked(GameObject a,float x, float y)
+    void disableRendering()
     {
-        Debug.Log("Clicked at" + x + " " + y);
-        clicked++;
-        Debug.Log(clicked);
-        Destroy(a);
+        foreach(GameObject i in objs)
+        {
+            i.GetComponent<SpriteRenderer>().enabled = false;
+        }
+        started = true;
     }
 }

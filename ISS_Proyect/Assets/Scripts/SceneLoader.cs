@@ -36,7 +36,8 @@ public class SceneLoader : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {		
+	void Update () {
+        if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();//Not working. Dont know why
 	}
 
     //Function to update the Stimes array with new values.
