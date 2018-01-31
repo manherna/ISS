@@ -42,7 +42,7 @@ public class TaskMusicManager : MonoBehaviour {
     void playShots()
     {
         audioSources[2].Play();
-        Invoke("playShots", (float)rnd2.Next(1, 5));
+        Invoke("playShots", (float)rnd2.Next(2, 5));
     }
 	
 	// Update is called once per frame
