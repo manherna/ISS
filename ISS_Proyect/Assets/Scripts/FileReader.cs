@@ -19,7 +19,7 @@ public class FileReader : MonoBehaviour {
     int i;
     // Use this for initialization
     void Start () {
-        sRead = new StreamReader("./Assets/files/test.txt");
+        sRead = new StreamReader("./Assets/files/SetupFile.txt");
         string line = sRead.ReadLine();
         string read;
         string prevRead = "";

@@ -36,7 +36,7 @@ public class GameManager2 : MonoBehaviour {
 
 
         started = false;
-        T = sLoader.getTaskTime();
+        T = 15;// sLoader.getTaskTime();
 
         //Initialization of our ecuation N = (T-IT)/MCT
         N = (int)((T - IT) / MCT);

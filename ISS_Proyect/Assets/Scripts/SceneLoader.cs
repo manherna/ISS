@@ -37,7 +37,11 @@ public class SceneLoader : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();//Not working. Dont know why
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            com.EndServer();
+            Application.Quit();
+        }
 	}
 
     //Function to update the Stimes array with new values.
@@ -75,7 +79,7 @@ public class SceneLoader : MonoBehaviour {
     }
     void changeToTask() {
         
-        SceneManager.LoadScene("TaskScene2", LoadSceneMode.Single);
+        SceneManager.LoadScene("TaskScene", LoadSceneMode.Single);
         com.OnSceneStart("TASK");
         currentScene = "TASK";
         tasktime = sTimes[1, actScene];
